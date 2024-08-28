@@ -14,7 +14,7 @@ transactions = [
 def get_transactions():
     return render_template("transactions.html",transactions=transactions)
 # Create operation
-@app.route("/create",methods = ["GET","POST"])
+@app.route("/add",methods = ["GET","POST"])
 def add_transaction():
     if request.method == "GET":
         return render_template("form.html")
@@ -30,9 +30,40 @@ def add_transaction():
         return redirect(url_for('get_transactions'))
 
 # Update operation
+@app.route("/edit/<int:transaction_id>",methods=["GET","POST"])
+def edit_transaction(transaction_id):
+    if request.method == "GET":
+        for transaction in transactions:
+            if transaction['id'] == transaction_id:
+                return render_template("edit.html",transaction=transaction)
+        # Implies transaction id is not found in the list of id
+        return {"message": "Transaction id not found"}, 404
+    elif request.method == "POST":
+        date=request.form['date']
+        amount=float(request.form['amount'])
+        for transaction in transactions:
+            if transaction['id'] == transaction_id:
+                transaction['date'] = date
+                transaction['amount'] = amount
+                break
+                
+        # Redirecting to transactions list page
+        return redirect(url_for('get_transactions'))   
+        
+
+
 
 # Delete operation
-
+@app.route("/delete/<int:transaction_id>")
+def delete_transaction(transaction_id):
+    for transaction in transactions:
+            if transaction['id'] == transaction_id:
+                #we need to delete this transaction from list
+                transactions.remove(transaction)
+                break
+    # Implies transaction id is not found in the list of id
+    # Redirecting to transactions list page
+    return redirect(url_for('get_transactions'))
 # Run the Flask app
 if __name__=="__main__":
     app.run(debug=True)
