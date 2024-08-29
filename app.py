@@ -12,7 +12,29 @@ transactions = [
 # Read operation
 @app.route('/')
 def get_transactions():
-    return render_template("transactions.html",transactions=transactions)
+    balance=0
+    for transaction in transactions:
+        balance+=transaction['amount']
+    return render_template("transactions.html",transactions=transactions,balance=balance)
+
+#Search Transactions (Read operation)
+
+@app.route('/search',methods=["GET","POST"])
+def search_transactions():
+    if request.method == "POST":
+        min_amount=float(request.form['min_amount'])
+        max_amount=float(request.form['max_amount'])
+        filtered_transactions=[]
+        for transaction in transactions:
+            # check if transaction amount is in specified range
+            if (transaction['amount'] >= min_amount) and (transaction['amount'] <= max_amount):
+                filtered_transactions.append(transaction)
+        # now all the filtered list is present, now we return this using all transaction template
+        return render_template("transactions.html",transactions=filtered_transactions)
+    # This is in case of get request , we just return a form template for max and min amounts
+    return render_template("search.html")
+
+
 # Create operation
 @app.route("/add",methods = ["GET","POST"])
 def add_transaction():
@@ -64,6 +86,16 @@ def delete_transaction(transaction_id):
     # Implies transaction id is not found in the list of id
     # Redirecting to transactions list page
     return redirect(url_for('get_transactions'))
+
+#Operations that calculate total balance
+@app.route('/balance')
+def total_balance():
+    balance=0
+    for transaction in transactions:
+        balance+=transaction['amount']
+    #finally displaying balance in string format
+    return f"Total balance after all the transactions is :{balance}"
+
 # Run the Flask app
 if __name__=="__main__":
     app.run(debug=True)

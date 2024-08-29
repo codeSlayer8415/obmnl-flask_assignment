@@ -48,7 +48,7 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Amount</th>
+                    <th>Amount(in dollars)</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -63,6 +63,10 @@
                     </td>
                 </tr>
                 {% endfor %}
+                <tr>
+                    <td>Total Balance:</td>
+                    <td>{{balance}}</td>
+                </tr>
             </tbody>
         </table>
 
